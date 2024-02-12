@@ -28,13 +28,20 @@ fn main() {
     let args = Args::parse();
 
     let mut output: Box<dyn Output>;
-    match args.cmd {
-        Commands::File { output_path } => output = Box::new(FileOutput::new(&output_path)),
-        Commands::Terminal => output = Box::new(TerminalOutput::new()),
-    }
+
+    let output_path = match args.cmd {
+        Commands::File { output_path } => {
+            output = Box::new(FileOutput::new(&output_path));
+            Some(output_path)
+        }
+        Commands::Terminal => {
+            output = Box::new(TerminalOutput::new());
+            None
+        }
+    };
 
     // a list of files to check against if the file should be ignored
-    let ignore_files = ignore_files::IgnoreFiles::new();
+    let ignore_files = ignore_files::IgnoreFiles::new(output_path);
 
     list_files::list_files(&mut output, &ignore_files);
 }

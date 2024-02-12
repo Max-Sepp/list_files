@@ -5,14 +5,25 @@ pub struct IgnoreFiles {
 }
 
 impl IgnoreFiles {
-    pub fn new() -> Self {
+    pub fn new(output_path: Option<String>) -> Self {
         let mut files_to_ignore = vec![".git".to_string()];
+
+        if output_path.is_some() {
+            files_to_ignore.push(output_path.unwrap())
+        }
 
         let gitignore_path = Path::new("./.gitignore");
 
         if gitignore_path.exists() {
             for line in read_to_string(gitignore_path).unwrap().lines() {
-                files_to_ignore.push(line.to_owned());
+                match line.chars().nth(0) {
+                    None => {}
+                    Some(first_char) => {
+                        if first_char != '#' {
+                            files_to_ignore.push(line.to_owned());
+                        }
+                    }
+                }
             }
         }
 

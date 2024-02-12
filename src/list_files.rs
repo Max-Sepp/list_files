@@ -7,17 +7,17 @@ fn output_file(output: &mut Box<dyn Output>, path: &Path) {
 
     let contents = fs::read_to_string(path);
 
-    match contents {
-        Ok(contents) => output.output(&contents),
+    let file_contents = match contents {
+        Ok(contents) => contents,
         Err(error) => {
-            if error.kind() == ErrorKind::InvalidData {
-                output.output("File was not UTF-8 encoded data");
-            } else {
+            if error.kind() != ErrorKind::InvalidData {
                 panic!("{}", error);
             }
+            "File does not contain UTF-8 encoded data".to_string()
         }
     };
 
+    output.output(&file_contents);
     output.output("\n");
 }
 
