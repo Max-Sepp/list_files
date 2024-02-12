@@ -3,7 +3,7 @@ use std::{fs, io::ErrorKind, path::Path};
 use crate::{ignore_files::IgnoreFiles, output::Output};
 
 fn output_file(output: &mut Box<dyn Output>, path: &Path) {
-    output.output(&format!("----- Filename: {} -----\n", path.display()));
+    output.output(&format!("----- Filename: {} -----\n\n", path.display()));
 
     let contents = fs::read_to_string(path);
 
