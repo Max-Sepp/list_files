@@ -2,7 +2,7 @@ use crate::output::Output;
 use std::{
     fs::{File, OpenOptions},
     io::Write,
-    path::Path,
+    path::{Path, PathBuf},
 };
 
 pub struct FileOutput {
@@ -10,7 +10,7 @@ pub struct FileOutput {
 }
 
 impl FileOutput {
-    pub fn new(path: &str) -> Self {
+    pub fn new(path: &PathBuf) -> Self {
         if Path::new(path).exists() {
             let data_file = OpenOptions::new()
                 .append(true)

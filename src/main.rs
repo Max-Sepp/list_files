@@ -1,40 +1,30 @@
-// use colored::*;
-
-// fn main() {
-//     println!("{}", "Hello world".blue());
-// }
-
 mod ignore_files;
 mod list_files;
 mod output;
 
-use clap::{Parser, Subcommand};
+use std::path::PathBuf;
+
+use clap::{arg, command, value_parser};
 use output::{file_output::FileOutput, terminal_output::TerminalOutput, Output};
 
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-    #[command(subcommand)]
-    cmd: Commands,
-}
-
-#[derive(Subcommand, Debug, Clone)]
-enum Commands {
-    File { output_path: String },
-    Terminal,
-}
-
 fn main() {
-    let args = Args::parse();
+    let args = command!()
+        .arg(
+            arg!(-o --output <FILE> "Specify an output file")
+                .required(false)
+                .value_parser(value_parser!(PathBuf)),
+        )
+        .get_matches();
 
     let mut output: Box<dyn Output>;
 
-    let output_path = match args.cmd {
-        Commands::File { output_path } => {
-            output = Box::new(FileOutput::new(&output_path));
-            Some(output_path)
+    // if this is Some then user wants to output to a file otherwise just print to a terminal
+    let output_path = match args.get_one::<PathBuf>("output") {
+        Some(output_path) => {
+            output = Box::new(FileOutput::new(output_path));
+            output_path.as_os_str().to_str()
         }
-        Commands::Terminal => {
+        None => {
             output = Box::new(TerminalOutput::new());
             None
         }

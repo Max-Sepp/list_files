@@ -5,11 +5,11 @@ pub struct IgnoreFiles {
 }
 
 impl IgnoreFiles {
-    pub fn new(output_path: Option<String>) -> Self {
+    pub fn new(output_path: Option<&str>) -> Self {
         let mut files_to_ignore = vec![".git".to_string()];
 
         if output_path.is_some() {
-            files_to_ignore.push(output_path.unwrap())
+            files_to_ignore.push(output_path.unwrap().to_string())
         }
 
         let gitignore_path = Path::new("./.gitignore");
